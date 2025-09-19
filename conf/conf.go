@@ -20,7 +20,6 @@ func Init(driver, dsn string) (service.InstanceRepo, *gorm.DB, error) {
 		logger.Debug("init service mysql")
 		return daoMysql.New(dsn)
 	case "memory":
-		logger.Debug("init service memory")
 		fallthrough
 	default:
 		logger.Debug("init service memory")
@@ -35,10 +34,9 @@ func InitConfig(driver string, db interface{}) config.ConfigRepo {
 		logger.Debug("init config mysql")
 		return mysql.NewConfigRepo(db.(*gorm.DB))
 	case "memory":
-		logger.Debug("init config memory")
 		fallthrough
 	default:
-		logger.Debug("init memory")
+		logger.Debug("init config memory")
 		return memory.New()
 	}
 }
