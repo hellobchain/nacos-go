@@ -7,7 +7,7 @@ services:
     image: github.com/hellobchain/nacos-go:v1.0.0
     container_name: nacos-go-server
     environment:
-      - NACOS_SERVER_LOG_LEVEL=debug
+      - NACOS_SERVER_LOG_LEVEL=info
       - NACOS_DB_DRIVER=mysql
     volumes:
       - ./logs:/nacos-go/logs
