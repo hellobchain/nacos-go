@@ -1,9 +1,9 @@
 server:
-  port: 3405 # 服务端口
+  port: 8848 # 服务端口
   log_level: debug # 日志级别
   console: true # 是否打印控制台日志
   heartbeat_interval: 5 # 心跳间隔
 # 数据库
 db:
   driver: memory # 数据库驱动 memory/mysql 默认memory
-  dsn: user:pass@tcp(127.0.0.1:3306)/nacos?charset=utf8mb4&parseTime=True&loc=Local # 数据库连接
+  dsn: nacos:nacos@tcp(nacos-go-db:3306)/nacos?charset=utf8mb4&parseTime=True&loc=Local # 数据库连接
