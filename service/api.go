@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/hellobchain/nacos-go/handle"
+	"github.com/hellobchain/nacos-go/httpcode"
 	"github.com/hellobchain/nacos-go/model"
 	"github.com/hellobchain/wswlog/wlogging"
 )
@@ -17,17 +18,17 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 	// 注册
 	r.HandleFunc("/nacos/v1/ns/instance", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost && r.Method != http.MethodDelete {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		if r.Method == http.MethodPost {
 			var ins model.Instance
 			if err := json.NewDecoder(r.Body).Decode(&ins); err != nil {
-				http.Error(w, err.Error(), http.StatusBadRequest)
+				httpcode.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
 			if err := registry.Register(ins); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			w.Write([]byte("ok"))
@@ -40,7 +41,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 			ip := r.URL.Query().Get("ip")
 			port := parseUint(r.URL.Query().Get("port"))
 			if err := registry.Repo.Deregister(serviceName, groupName, ip, port); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
+				httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
 			w.Write([]byte("ok"))
@@ -49,14 +50,14 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 	// 发现
 	r.HandleFunc("/nacos/v1/ns/instance/list", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		serviceName := r.URL.Query().Get("serviceName")
 		groupName := r.URL.Query().Get("groupName")
 		list, err := registry.List(serviceName, groupName)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		_ = json.NewEncoder(w).Encode(list)
@@ -65,7 +66,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 	// 心跳
 	r.HandleFunc("/nacos/v1/ns/instance/beat", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPut {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		serviceName := r.URL.Query().Get("serviceName")
@@ -73,7 +74,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 		ip := r.URL.Query().Get("ip")
 		port := parseUint(r.URL.Query().Get("port"))
 		if err := registry.Heartbeat(serviceName, groupName, ip, port); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Write([]byte("ok"))

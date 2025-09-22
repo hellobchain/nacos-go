@@ -3,10 +3,13 @@ module github.com/hellobchain/nacos-go
 go 1.25
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/google/uuid v1.1.2
 	github.com/gorilla/mux v1.8.1
 	github.com/hellobchain/wswlog v0.0.0-20250917145740-f4ff1a0c0917
 	github.com/hokaccha/go-prettyjson v0.0.0-20211117102719-0474bc63780f
 	github.com/spf13/viper v1.21.0
+	golang.org/x/crypto v0.0.0-20220817201139-bc19a97f63c8
 	gorm.io/driver/mysql v1.6.0
 	gorm.io/gorm v1.31.0
 )

@@ -5,19 +5,25 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hellobchain/nacos-go/conf"
 	"github.com/hellobchain/nacos-go/config"
 	"github.com/hellobchain/nacos-go/handle"
+	"github.com/hellobchain/nacos-go/middleware"
 	"github.com/hellobchain/nacos-go/service"
+	"github.com/hellobchain/nacos-go/user"
 	"github.com/hellobchain/wswlog/wlogging"
 )
 
 var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 
-func StartServer(regSvc *service.RegistryService, confSvc *config.Service, serverPort int) {
+func StartServer(allService conf.AllService, serverPort int) {
 	// 启动 HTTP：把两个路由挂载到同端口
 	r := handle.NewLogRouter()
-	service.RegistryRoute(r, regSvc) // 原 /nacos/v1/ns 路由
-	config.ConfigRoute(r, confSvc)   // 新增 /v1/cs 路由
+	// 全局中间件（顺序：CORS → Logger → JWTAuth）
+	r.Use(middleware.CORS, middleware.Logger, middleware.JWTAuth)
+	service.RegistryRoute(r, allService.InstanceService) // 原 /nacos/v1/ns 路由
+	config.ConfigRoute(r, allService.ConfigService)      // 新增 /v1/cs 路由
+	user.AuthRoute(r, allService.UserService)            // 新增 /v1/auth
 	if serverPort == 0 {
 		logger.Warnf("Invalid server port %d, use default 8848", serverPort)
 		serverPort = 8848

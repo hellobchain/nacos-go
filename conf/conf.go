@@ -2,41 +2,56 @@ package conf
 
 import (
 	"github.com/hellobchain/nacos-go/config"
-	"github.com/hellobchain/nacos-go/config/memory"
-	"github.com/hellobchain/nacos-go/config/mysql"
+	configMemory "github.com/hellobchain/nacos-go/config/memory"
+	configMysql "github.com/hellobchain/nacos-go/config/mysql"
 	"github.com/hellobchain/nacos-go/service"
 	daoMemory "github.com/hellobchain/nacos-go/service/memory"
 	daoMysql "github.com/hellobchain/nacos-go/service/mysql"
+	"github.com/hellobchain/nacos-go/user"
+	userMemory "github.com/hellobchain/nacos-go/user/memory"
+	userMysql "github.com/hellobchain/nacos-go/user/mysql"
 	"github.com/hellobchain/wswlog/wlogging"
-
-	"gorm.io/gorm"
 )
 
 var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 
-func Init(driver, dsn string) (service.InstanceRepo, *gorm.DB, error) {
+type AllConfig struct {
+	InstanceRepo service.InstanceRepo
+	UserRepo     user.UserRepo
+	ConfigRepo   config.ConfigRepo
+}
+
+func InitAllConfig(driver string, dsn string) AllConfig {
+	var allConfig AllConfig
 	switch driver {
 	case "mysql":
 		logger.Debug("init service mysql")
-		return daoMysql.New(dsn)
+		dbService, db := daoMysql.New(dsn)
+		allConfig.ConfigRepo = configMysql.NewConfigRepo(db)
+		allConfig.InstanceRepo = dbService
+		allConfig.UserRepo = userMysql.New(db)
 	case "memory":
 		fallthrough
 	default:
 		logger.Debug("init service memory")
-		return daoMemory.New(), nil, nil
+		allConfig.ConfigRepo = configMemory.New()
+		allConfig.InstanceRepo = daoMemory.New()
+		allConfig.UserRepo = userMemory.New()
 	}
+	return allConfig
 }
 
-// InitConfig 根据 driver 初始化配置中心存储
-func InitConfig(driver string, db interface{}) config.ConfigRepo {
-	switch driver {
-	case "mysql":
-		logger.Debug("init config mysql")
-		return mysql.NewConfigRepo(db.(*gorm.DB))
-	case "memory":
-		fallthrough
-	default:
-		logger.Debug("init config memory")
-		return memory.New()
-	}
+type AllService struct {
+	InstanceService *service.RegistryService
+	ConfigService   *config.Service
+	UserService     *user.AuthUserService
+}
+
+func InitAllService(allConfig AllConfig) AllService {
+	var allService AllService
+	allService.InstanceService = service.NewRegistryService(allConfig.InstanceRepo)
+	allService.ConfigService = config.NewService(allConfig.ConfigRepo)
+	allService.UserService = user.NewAuthUserService(allConfig.UserRepo)
+	user.InitAdminUser(allService.UserService)
+	return allService
 }

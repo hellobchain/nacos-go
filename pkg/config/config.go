@@ -44,7 +44,7 @@ func setEnvVariables() {
 
 var GlobalNacosConfig NacosConfig
 
-func InitNacosConfig(path string) (*NacosConfig, error) {
+func InitNacosConfig(path string) *NacosConfig {
 	if path == "" {
 		logger.Info("use default config path")
 		path = "nacos.yml"
@@ -52,16 +52,16 @@ func InitNacosConfig(path string) (*NacosConfig, error) {
 	setEnvVariables()
 	viper.SetConfigFile(path)
 	if err := viper.ReadInConfig(); err != nil {
-		logger.Error("init nacos config error: %v", err)
-		return nil, err
+		logger.Fatal("init nacos config error: %v", err)
 	}
 	err := viper.Unmarshal(&GlobalNacosConfig)
 	if err != nil {
-		logger.Error("unmarshal nacos config error: %v", err)
-		return nil, err
+		logger.Fatal("unmarshal nacos config error: %v", err)
 	}
 	GlobalNacosConfig.printLog()
-	return &GlobalNacosConfig, nil
+	wlogging.SetConsole(GlobalNacosConfig.ServerConfig.Console)
+	wlogging.SetGlobalLogLevel(GlobalNacosConfig.ServerConfig.LogLevel)
+	return &GlobalNacosConfig
 }
 
 func (c *NacosConfig) printLog() {

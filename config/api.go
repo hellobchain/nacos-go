@@ -7,26 +7,27 @@ import (
 	"time"
 
 	"github.com/hellobchain/nacos-go/handle"
+	"github.com/hellobchain/nacos-go/httpcode"
 	"github.com/hellobchain/wswlog/wlogging"
 )
 
 var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 
 func ConfigRoute(r *handle.LogRouter, svc *Service) {
-	logger.Debug("init config route")
+	logger.Info("init config route")
 	// 发布 / 更新配置
 	r.HandleFunc("/v1/cs/configs", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		var item ConfigItem
 		if err := json.NewDecoder(req.Body).Decode(&item); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		if err := svc.Publish(req.Context(), item); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Write([]byte("true"))
@@ -35,7 +36,7 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 	// 获取配置
 	r.HandleFunc("/v1/cs/configs", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodGet {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		dataId := req.URL.Query().Get("dataId")
@@ -43,7 +44,7 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 		tenant := req.URL.Query().Get("tenantId")
 		item, err := svc.Get(req.Context(), dataId, group, tenant)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusNotFound)
+			httpcode.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
 		_ = json.NewEncoder(w).Encode(item)
@@ -52,14 +53,14 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 	// 删除配置
 	r.HandleFunc("/v1/cs/configs", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodDelete {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		dataId := req.URL.Query().Get("dataId")
 		group := req.URL.Query().Get("group")
 		tenant := req.URL.Query().Get("tenantId")
 		if err := svc.Delete(req.Context(), dataId, group, tenant); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		w.Write([]byte("true"))
@@ -68,7 +69,7 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 	// 监听配置（简易版：30s 长轮询）
 	r.HandleFunc("/v1/cs/configs/listener", func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodPost {
-			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
 		dataId := req.URL.Query().Get("dataId")

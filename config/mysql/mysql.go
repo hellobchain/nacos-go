@@ -19,7 +19,7 @@ type configMysql struct {
 func NewConfigRepo(db *gorm.DB) config.ConfigRepo {
 	err := db.AutoMigrate(&configPO{})
 	if err != nil {
-		logger.Fatal("mysql auto migrate error:", err)
+		logger.Fatal("mysql auto migrate config error:", err)
 	}
 	return &configMysql{db: db}
 }
