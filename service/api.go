@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/handle"
 	"github.com/hellobchain/nacos-go/httpcode"
 	"github.com/hellobchain/nacos-go/model"
@@ -16,7 +17,7 @@ var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 	logger.Info("Init RegistryRoute")
 	// 注册
-	r.HandleFunc("/nacos/v1/ns/instance", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc(constant.REGISTER_SERVICE_ROUTER, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost && r.Method != http.MethodDelete {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -48,7 +49,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 		}
 	}).Methods(http.MethodPost, http.MethodDelete)
 	// 发现
-	r.HandleFunc("/nacos/v1/ns/instance/list", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc(constant.LIST_SERVICE_ROUTER, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -64,7 +65,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 	}).Methods(http.MethodGet)
 
 	// 心跳
-	r.HandleFunc("/nacos/v1/ns/instance/beat", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc(constant.HEARTBEAT_SERVICE_ROUTER, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPut {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/handle"
 	"github.com/hellobchain/nacos-go/httpcode"
 	"github.com/hellobchain/wswlog/wlogging"
@@ -13,7 +14,7 @@ var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 
 func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 	logger.Info("Init AuthRoute")
-	r.HandleFunc("/v1/auth/login", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc(constant.AUTH_LOGIN, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/handle"
 	"github.com/hellobchain/nacos-go/httpcode"
 	"github.com/hellobchain/wswlog/wlogging"
@@ -16,7 +17,7 @@ var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 func ConfigRoute(r *handle.LogRouter, svc *Service) {
 	logger.Info("init config route")
 	// 发布 / 更新配置
-	r.HandleFunc("/v1/cs/configs", func(w http.ResponseWriter, req *http.Request) {
+	r.HandleFunc(constant.CONFIGS_ROUTER, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodPost {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -31,10 +32,10 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			return
 		}
 		w.Write([]byte("true"))
-	}).Methods("POST")
+	}).Methods(http.MethodPost)
 
 	// 获取配置
-	r.HandleFunc("/v1/cs/configs", func(w http.ResponseWriter, req *http.Request) {
+	r.HandleFunc(constant.CONFIGS_ROUTER, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodGet {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -48,10 +49,10 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			return
 		}
 		_ = json.NewEncoder(w).Encode(item)
-	}).Methods("GET")
+	}).Methods(http.MethodGet)
 
 	// 删除配置
-	r.HandleFunc("/v1/cs/configs", func(w http.ResponseWriter, req *http.Request) {
+	r.HandleFunc(constant.CONFIGS_ROUTER, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodDelete {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -64,10 +65,10 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			return
 		}
 		w.Write([]byte("true"))
-	}).Methods("DELETE")
+	}).Methods(http.MethodDelete)
 
 	// 监听配置（简易版：30s 长轮询）
-	r.HandleFunc("/v1/cs/configs/listener", func(w http.ResponseWriter, req *http.Request) {
+	r.HandleFunc(constant.LISTEN_CONFIGS, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodPost {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
@@ -98,5 +99,5 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 				}
 			}
 		}
-	}).Methods("POST")
+	}).Methods(http.MethodPost)
 }

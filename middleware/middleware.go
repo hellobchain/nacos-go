@@ -1,12 +1,14 @@
 package middleware
 
 import (
+	"net"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
+	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/httpcode"
 	"github.com/hellobchain/nacos-go/pkg/utils"
 	"github.com/hellobchain/wswlog/wlogging"
@@ -17,7 +19,7 @@ var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 
 func JWTAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/v1/auth/login" {
+		if r.URL.Path == constant.AUTH_LOGIN {
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -78,7 +80,18 @@ func getClientIP(r *http.Request) string {
 	if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
 		return strings.Split(ip, ",")[0]
 	}
-	return r.RemoteAddr
+	return remoteIP(r)
+}
+func remoteIP(r *http.Request) string {
+	ip, _, err := net.SplitHostPort(strings.TrimSpace(r.RemoteAddr))
+	if err != nil {
+		return ""
+	}
+	remoteIP := net.ParseIP(ip)
+	if remoteIP == nil {
+		return ""
+	}
+	return remoteIP.String()
 }
 
 func CORS(next http.Handler) http.Handler {

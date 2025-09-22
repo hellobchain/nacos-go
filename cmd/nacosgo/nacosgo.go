@@ -7,6 +7,7 @@ import (
 
 	"github.com/hellobchain/nacos-go/conf"
 	"github.com/hellobchain/nacos-go/config"
+	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/handle"
 	"github.com/hellobchain/nacos-go/middleware"
 	"github.com/hellobchain/nacos-go/service"
@@ -25,8 +26,8 @@ func StartServer(allService conf.AllService, serverPort int) {
 	config.ConfigRoute(r, allService.ConfigService)      // 新增 /v1/cs 路由
 	user.AuthRoute(r, allService.UserService)            // 新增 /v1/auth
 	if serverPort == 0 {
-		logger.Warnf("Invalid server port %d, use default 8848", serverPort)
-		serverPort = 8848
+		logger.Warnf("Invalid server port %d, use default %d", serverPort, constant.DEFAULT_SERVER_PORT)
+		serverPort = constant.DEFAULT_SERVER_PORT
 	}
 	addr := fmt.Sprintf(":%d", serverPort)
 	srv := &http.Server{
