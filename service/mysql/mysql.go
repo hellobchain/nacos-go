@@ -6,10 +6,12 @@ import (
 
 	"github.com/hellobchain/nacos-go/model"
 	"github.com/hellobchain/nacos-go/service"
+	"github.com/hellobchain/wswlog/wlogging"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
+var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 var _ service.InstanceRepo = (*mysqlRepo)(nil)
 
 type mysqlRepo struct {
@@ -21,6 +23,10 @@ func New(dsn string) (service.InstanceRepo, *gorm.DB, error) {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, nil, err
+	}
+	err = db.AutoMigrate(&InstancePO{})
+	if err != nil {
+		logger.Fatal("mysql auto migrate error:", err)
 	}
 	return &mysqlRepo{db: db}, db, nil
 }

@@ -39,7 +39,7 @@ func main() {
 	// 4. 构建业务服务
 	confSvc := daoConfig.NewService(configRepo)
 	// 5. 启动后台心跳清理协程
-	nacosgo.StartHeartbeat(regSvc)
+	nacosgo.StartHeartbeat(regSvc, nacosConfig.ServerConfig.HeartbeatInterval)
 	// 6. 启动 HTTP 服务（阻塞）
-	nacosgo.StartServer(regSvc, confSvc)
+	nacosgo.StartServer(regSvc, confSvc, nacosConfig.ServerConfig.Port)
 }

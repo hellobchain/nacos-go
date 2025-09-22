@@ -6,29 +6,36 @@ import (
 	"encoding/hex"
 
 	"github.com/hellobchain/nacos-go/config"
+	"github.com/hellobchain/wswlog/wlogging"
 	"gorm.io/gorm"
 )
+
+var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 
 type configMysql struct {
 	db *gorm.DB
 }
 
 func NewConfigRepo(db *gorm.DB) config.ConfigRepo {
+	err := db.AutoMigrate(&configPO{})
+	if err != nil {
+		logger.Fatal("mysql auto migrate error:", err)
+	}
 	return &configMysql{db: db}
 }
 
 type configPO struct {
 	gorm.Model
-	DataId   string `gorm:"column:data_id;index:uk,unique"`
-	GroupId  string `gorm:"column:group_id;index:uk,unique"`
-	TenantId string `gorm:"column:tenant_id;index:uk,unique"`
-	Content  string `gorm:"column:content"`
-	Md5      string `gorm:"column:md5"`
-	BetaIps  string `gorm:"column:beta_ips"`
-	SrcUser  string `gorm:"column:src_user"`
-	SrcIp    string `gorm:"column:src_ip"`
-	AppName  string `gorm:"column:app_name"`
-	Type     string `gorm:"column:type"`
+	DataId   string `gorm:"column:data_id;size:128;not null;index:uk_config,unique"`
+	GroupId  string `gorm:"column:group_id;size:128;not null;default:DEFAULT_GROUP;index:uk_config,unique"`
+	TenantId string `gorm:"column:tenant_id;size:128;default:'';index:uk_config,unique"`
+	Content  string `gorm:"column:content;type:text;not null"`
+	Md5      string `gorm:"column:md5;size:32;not null"`
+	BetaIps  string `gorm:"column:beta_ips;size:1024"`
+	SrcUser  string `gorm:"column:src_user;size:128"`
+	SrcIp    string `gorm:"column:src_ip;size:64"`
+	AppName  string `gorm:"column:app_name;size:128"`
+	Type     string `gorm:"column:type;size:16;default:yaml"`
 }
 
 func (configPO) TableName() string { return "config" }

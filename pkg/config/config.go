@@ -2,6 +2,7 @@ package config
 
 import (
 	"strings"
+	"time"
 
 	"github.com/hellobchain/wswlog/wlogging"
 	"github.com/hokaccha/go-prettyjson"
@@ -16,10 +17,10 @@ type NacosConfig struct {
 }
 
 type ServerConfig struct {
-	Port              int    `mapstructure:"port"`               // 端口
-	LogLevel          string `mapstructure:"log_level"`          // 日志级别
-	Console           bool   `mapstructure:"console"`            // 是否开启控制台输出
-	HeartbeatInterval int    `mapstructure:"heartbeat_interval"` // 心跳检测间隔
+	Port              int           `mapstructure:"port"`               // 端口
+	LogLevel          string        `mapstructure:"log_level"`          // 日志级别
+	Console           bool          `mapstructure:"console"`            // 是否开启控制台输出
+	HeartbeatInterval time.Duration `mapstructure:"heartbeat_interval"` // 心跳检测间隔
 }
 
 // 数据库类型配置
@@ -45,6 +46,7 @@ var GlobalNacosConfig NacosConfig
 
 func InitNacosConfig(path string) (*NacosConfig, error) {
 	if path == "" {
+		logger.Info("use default config path")
 		path = "nacos.yml"
 	}
 	setEnvVariables()
