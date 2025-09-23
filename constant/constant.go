@@ -30,3 +30,8 @@ const (
 	// 用户登录
 	AUTH_LOGIN = "/nacos/v1/auth/login"
 )
+
+const (
+	SRC_USER = "srcUser"
+	SRC_IP   = "srcIp"
+)

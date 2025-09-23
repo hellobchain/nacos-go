@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/handle"
 	"github.com/hellobchain/nacos-go/httpcode"
@@ -27,6 +28,11 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		item.Tenant = uuid.New().String()
+		item.SrcIp = req.Header.Get(constant.SRC_IP)
+		req.Header.Del(constant.SRC_IP)
+		item.SrcUser = req.Header.Get(constant.SRC_USER)
+		req.Header.Del(constant.SRC_USER)
 		if err := svc.Publish(req.Context(), item); err != nil {
 			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return

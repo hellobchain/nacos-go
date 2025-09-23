@@ -6,7 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/httpcode"
@@ -33,13 +32,14 @@ func JWTAuth(next http.Handler) http.Handler {
 			return
 		}
 		tokenStr := bearer[7:]
-		token, err := jwt.Parse(tokenStr, func(t *jwt.Token) (interface{}, error) {
-			return []byte(utils.GetSecret()), nil
-		})
-		if err != nil || !token.Valid {
+		token, err := utils.LoadJwtClaims(tokenStr)
+		if err != nil {
 			httpcode.Error(w, "invalid token", http.StatusUnauthorized)
 			return
 		}
+		// 保存用户信息
+		r.Header.Set(constant.SRC_USER, token.GetUserName())
+		r.Header.Set(constant.SRC_IP, getClientIP(r))
 		next.ServeHTTP(w, r)
 	})
 }

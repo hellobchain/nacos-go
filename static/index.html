@@ -139,13 +139,13 @@ async function loadCfg(){
   let html = '';
   (res.data || []).forEach(c=>{
     html+=`<tr><td>${c.dataId}</td><td>${c.group}</td><td><pre>${c.content}</pre></td>
-           <td><button onclick=delCfg('${c.dataId}','${c.group}')>删除</button></td></tr>`;
+           <td><button onclick=delCfg('${c.dataId}','${c.group}','${c.tenant}')>删除</button></td></tr>`;
   });
   cfgTable.tBodies[0].innerHTML = html || '<tr><td colspan=4>暂无配置</td></tr>';
 }
 
-async function delCfg(dataId, group){
-  const res = await fetch(base+`/v1/cs/configs?dataId=${dataId}&group=${group}`,{
+async function delCfg(dataId, group, tenantId){
+  const res = await fetch(base+`/v1/cs/configs?dataId=${dataId}&group=${group}&tenantId=${tenantId}`,{
     method:'DELETE',
     headers:{Authorization:'Bearer '+token}
   }).then(r=>r.json());
