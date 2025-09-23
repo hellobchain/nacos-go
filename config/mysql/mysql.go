@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"time"
 
 	"github.com/hellobchain/nacos-go/config"
 	"github.com/hellobchain/wswlog/wlogging"
@@ -15,6 +16,11 @@ var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 type configMysql struct {
 	db *gorm.DB
 }
+type Model struct {
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
 
 func NewConfigRepo(db *gorm.DB) config.ConfigRepo {
 	err := db.AutoMigrate(&configPO{})
@@ -25,7 +31,7 @@ func NewConfigRepo(db *gorm.DB) config.ConfigRepo {
 }
 
 type configPO struct {
-	gorm.Model
+	Model
 	DataId   string `gorm:"column:data_id;size:128;not null;index:uk_config,unique"`
 	GroupId  string `gorm:"column:group_id;size:128;not null;default:DEFAULT_GROUP;index:uk_config,unique"`
 	TenantId string `gorm:"column:tenant_id;size:128;default:'';index:uk_config,unique"`

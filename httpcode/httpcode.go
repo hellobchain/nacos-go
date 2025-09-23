@@ -1,6 +1,7 @@
 package httpcode
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -15,7 +16,16 @@ func Error(w http.ResponseWriter, message string, code int) {
 	http.Error(w, errMsg, http.StatusOK)
 }
 
-func Success(w http.ResponseWriter, data interface{}) {
+func Success(w http.ResponseWriter, code int, msg string, data interface{}) {
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "%v", data)
+	resData := map[string]interface{}{
+		"code":    code,
+		"message": msg,
+		"data":    data,
+	}
+	resDataStr, err := json.Marshal(resData)
+	if err != nil {
+		logger.Errorf("[http result] code: %d: msg: %s", code, msg)
+	}
+	w.Write([]byte(resDataStr))
 }

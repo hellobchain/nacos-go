@@ -10,6 +10,9 @@ const (
 	CONFIGS_ROUTER = "/nacos/v1/cs/configs"
 	// 监听配置
 	LISTEN_CONFIGS = "/nacos/v1/cs/configs/listener"
+
+	// 监听配置
+	LIST_CONFIGS = "/nacos/v1/cs/configs/list"
 )
 
 // 服务

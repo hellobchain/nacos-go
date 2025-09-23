@@ -32,7 +32,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 				httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.Write([]byte("ok"))
+			httpcode.Success(w, http.StatusOK, "success", nil)
 			return
 		}
 		// 删除（Deregister）也可以用同一个 path，这里简化
@@ -45,7 +45,8 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 				httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.Write([]byte("ok"))
+			httpcode.Success(w, http.StatusOK, "success", nil)
+			return
 		}
 	}).Methods(http.MethodPost, http.MethodDelete)
 	// 发现
@@ -61,7 +62,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		_ = json.NewEncoder(w).Encode(list)
+		httpcode.Success(w, http.StatusOK, "success", list)
 	}).Methods(http.MethodGet)
 
 	// 心跳
@@ -78,7 +79,7 @@ func RegistryRoute(r *handle.LogRouter, registry *RegistryService) {
 			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte("ok"))
+		httpcode.Success(w, http.StatusOK, "success", nil)
 	}).Methods(http.MethodPut)
 }
 

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hellobchain/nacos-go/model"
+	nacosConfig "github.com/hellobchain/nacos-go/pkg/config"
 	"github.com/hellobchain/nacos-go/service"
 	"github.com/hellobchain/wswlog/wlogging"
 	"gorm.io/driver/mysql"
@@ -27,24 +28,38 @@ func (s *sqlLogger) LogMode(level gormLogger.LogLevel) gormLogger.Interface {
 
 // Info(context.Context, string, ...interface{})
 func (s *sqlLogger) Info(ctx context.Context, str string, args ...interface{}) {
-	s.logger.Infof(str, args...)
+	if nacosConfig.GlobalNacosConfig.DBConfig.LogMode {
+		s.logger.Infof(str, args...)
+	}
 }
 
 // Warn(context.Context, string, ...interface{})
 func (s *sqlLogger) Warn(ctx context.Context, str string, args ...interface{}) {
-	s.logger.Warnf(str, args...)
+	if nacosConfig.GlobalNacosConfig.DBConfig.LogMode {
+		s.logger.Warnf(str, args...)
+	}
 }
 
 // Error(context.Context, string, ...interface{})
 func (s *sqlLogger) Error(ctx context.Context, str string, args ...interface{}) {
-	s.logger.Errorf(str, args...)
+	if nacosConfig.GlobalNacosConfig.DBConfig.LogMode {
+		s.logger.Errorf(str, args...)
+	}
 }
 
 // Trace(ctx context.Context, begin time.Time, fc func() (sql string, rowsAffected int64), err error)
 func (s *sqlLogger) Trace(ctx context.Context, begin time.Time, fc func() (string, int64), err error) {
-	sql, rows := fc()
-	if err != nil {
-		s.logger.Errorf("[SQL] [ERROR] %s [%.3fms] [rows:%d] %v", sql, float64(time.Since(begin).Nanoseconds())/1e6, rows, err)
+	if nacosConfig.GlobalNacosConfig.DBConfig.LogMode {
+		sql, rows := fc()
+		if err == nil {
+			if rows == 0 {
+				s.logger.Debugf("[SQL] %s [%.3fms] [rows:%d]", sql, float64(time.Since(begin).Nanoseconds())/1e6, rows)
+			} else {
+				s.logger.Infof("[SQL] %s [%.3fms] [rows:%d]", sql, float64(time.Since(begin).Nanoseconds())/1e6, rows)
+			}
+		} else {
+			s.logger.Errorf("[SQL] [ERROR] %s [%.3fms] [rows:%d] %v", sql, float64(time.Since(begin).Nanoseconds())/1e6, rows, err)
+		}
 	}
 }
 
@@ -52,8 +67,13 @@ func NewSqlLogger(logger *wlogging.WswLogger) *sqlLogger {
 	return &sqlLogger{logger: logger}
 }
 
+type Model struct {
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
 type InstancePO struct {
-	gorm.Model
+	Model
 	ServiceName string  `gorm:"column:service_name;size:128;not null;index:uk_instance,unique"`
 	GroupName   string  `gorm:"column:group_name;size:128;not null;index:uk_instance,unique"`
 	ClusterName string  `gorm:"column:cluster_name;size:128;default:DEFAULT"`

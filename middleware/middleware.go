@@ -19,6 +19,10 @@ var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 
 func JWTAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/static") {
+			next.ServeHTTP(w, r)
+			return
+		}
 		if r.URL.Path == constant.AUTH_LOGIN {
 			next.ServeHTTP(w, r)
 			return
@@ -99,8 +103,8 @@ func CORS(next http.Handler) http.Handler {
 		// 简单 * 放行
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, HEAD, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-
+		// w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type")
 		// 预检请求直接返回
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(http.StatusNoContent)

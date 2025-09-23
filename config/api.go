@@ -31,7 +31,7 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte("true"))
+		httpcode.Success(w, http.StatusOK, "success", "true")
 	}).Methods(http.MethodPost)
 
 	// 获取配置
@@ -48,7 +48,24 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			httpcode.Error(w, err.Error(), http.StatusNotFound)
 			return
 		}
-		_ = json.NewEncoder(w).Encode(item)
+		httpcode.Success(w, http.StatusOK, "success", item)
+	}).Methods(http.MethodGet)
+
+	// 获取配置
+	r.HandleFunc(constant.LIST_CONFIGS, func(w http.ResponseWriter, req *http.Request) {
+		if req.Method != http.MethodGet {
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		dataId := req.URL.Query().Get("dataId")
+		group := req.URL.Query().Get("group")
+		tenant := req.URL.Query().Get("tenantId")
+		item, err := svc.List(req.Context(), dataId, group, tenant)
+		if err != nil {
+			httpcode.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		httpcode.Success(w, http.StatusOK, "success", item)
 	}).Methods(http.MethodGet)
 
 	// 删除配置
@@ -64,7 +81,7 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			httpcode.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.Write([]byte("true"))
+		httpcode.Success(w, http.StatusOK, "success", "true")
 	}).Methods(http.MethodDelete)
 
 	// 监听配置（简易版：30s 长轮询）
@@ -94,7 +111,7 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			case <-ticker.C:
 				item, err := svc.Get(ctx, dataId, group, tenant)
 				if err == nil && item.Md5 != md5Client {
-					_ = json.NewEncoder(w).Encode(map[string]string{"content": item.Content, "md5": item.Md5})
+					httpcode.Success(w, http.StatusOK, "success", map[string]string{"content": item.Content, "md5": item.Md5})
 					return
 				}
 			}

@@ -32,7 +32,7 @@ func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		json.NewEncoder(w).Encode(map[string]string{"accessToken": "Bearer " + token, "uuid": uuid})
+		httpcode.Success(w, http.StatusOK, "success", map[string]string{"accessToken": token, "uuid": uuid})
 	}).Methods(http.MethodPost)
 	return r
 }

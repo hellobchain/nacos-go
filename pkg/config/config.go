@@ -25,8 +25,9 @@ type ServerConfig struct {
 
 // 数据库类型配置
 type DBConfig struct {
-	Driver string `mapstructure:"driver"` // 数据库驱动
-	Dsn    string `mapstructure:"dsn"`    // 数据库连接串
+	Driver  string `mapstructure:"driver"`   // 数据库驱动
+	Dsn     string `mapstructure:"dsn"`      // 数据库连接串
+	LogMode bool   `mapstructure:"log_mode"` // 是否开启数据库日志
 }
 
 const (

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>nacos-go 控制台</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:#f7f7f7}
+    .card{background:#fff;padding:15px 20px;margin-bottom:15px;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+    h2{margin-top:0;font-size:18px}
+    table{width:100%;border-collapse:collapse;font-size:14px}
+    th,td{padding:6px 8px;border:1px solid #e6e6e6;text-align:left}
+    th{background:#fafafa}
+    button{padding:4px 10px;font-size:12px;cursor:pointer}
+    input,textarea{padding:4px 6px;font-size:12px;border:1px solid #ccc;border-radius:2px}
+    .red{color:#e55}
+    .green{color:#393}
+  </style>
+  <style>
+  /* 通知栏核心样式 */
+  #notifyBox{position:fixed;top:10px;left:50%;transform:translateX(-50%);
+    z-index:9999;font-size:14px;color:#fff;padding:8px 16px;border-radius:4px;
+    transition:opacity .3s;opacity:0;pointer-events:none}
+  .notify-success{background:#52c41a}
+  .notify-error{background:#ff4d4f}
+  .notify-info{background:#1890ff}
+</style>
+</head>
+<body>
+  <!-- 登录 -->
+  <div id="loginCard" class="card">
+    <h2>登录</h2>
+    <input id="user" placeholder="用户名" value="nacos">
+    <input id="pwd" placeholder="密码" type="password" value="nacos">
+    <button onclick="login()">登录</button>
+  </div>
+
+  <!-- 服务列表 -->
+  <div id="svcCard" class="card" style="display:none">
+    <h2>服务实例</h2>
+    <table id="svcTable">
+      <thead><tr><th>服务名</th><th>分组</th><th>IP:端口</th><th>健康</th><th>操作</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- 配置列表 -->
+  <div id="cfgCard" class="card" style="display:none">
+    <h2>配置列表</h2>
+    <table id="cfgTable">
+      <thead><tr><th>DataId</th><th>Group</th><th>内容</th><th>操作</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- 发布配置 -->
+  <div id="pubCard" class="card" style="display:none">
+    <h2>发布配置</h2>
+    <input id="dataId" placeholder="DataId"><br>
+    <input id="groupId" placeholder="Group（默认 DEFAULT_GROUP）"><br>
+    <textarea id="content" rows="6" cols="60" placeholder="配置内容"></textarea><br>
+    <button onclick="publishConfig()">发布</button>
+  </div>
+  <!-- 登出 -->
+  <div id="logoutBar" style="position:fixed;top:10px;right:10px;display:none;">
+  <button onclick="logout()">退出登录</button>
+  </div>
+
+  <!-- 放一条看不见的通知栏 -->
+  <div id="notifyBox"></div>
+
+<script>
+const base = '/nacos'; // 同域部署，留空即可
+let token = localStorage.getItem('token') || '';
+
+/* ---------- 登录 ---------- */
+async function login(){
+  const res = await fetch(base+'/v1/auth/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({username: user.value, password: pwd.value})
+  }).then(r=>r.json());
+  if(res.code==200){
+    token = res.data.accessToken;
+    localStorage.setItem('token', token);
+    loginCard.style.display='none';
+    svcCard.style.display='block';
+    cfgCard.style.display='block';
+    pubCard.style.display='block';
+    document.getElementById('logoutBar').style.display='block'; // ★ 显示退出
+    loadSvc(); 
+    loadCfg();
+    notifySuccess('登录成功');
+  }else {
+    notifyError('登录失败:'+res.message);
+  }
+}
+
+/* ---------- 服务列表 ---------- */
+async function loadSvc(){
+  const res = await fetch(base+'/v1/ns/instance/list',{
+    headers:{Authorization:'Bearer '+token}
+  }).then(r=>r.json());
+  let html = '';
+  if (res.code != 200 ) {
+    notifyError('获取服务列表失败:'+res.message);
+    return;
+  }
+  (res.data || []).forEach(i=>{
+    const health = i.healthy ? '<span class=green>健康</span>' : '<span class=red>下线</span>';
+    html+=`<tr><td>${i.serviceName}</td><td>${i.groupName}</td><td>${i.ip}:${i.port}</td><td>${health}</td>
+           <td><button onclick=deregister('${i.ip}',${i.port})>下线</button></td></tr>`;
+  });
+  svcTable.tBodies[0].innerHTML = html || '<tr><td colspan=5>暂无实例</td></tr>';
+}
+
+async function deregister(ip, port){
+  const res = await fetch(base+`/v1/ns/instance?ip=${ip}&port=${port}`,{
+    method:'DELETE',
+    headers:{Authorization:'Bearer '+token}
+  }).then(r=>r.json());
+  if (res.code == 200) {
+    notifySuccess('下线成功');
+    loadSvc();
+  } else {  
+    notifyError('下线失败:'+res.message);
+  }
+
+}
+
+/* ---------- 配置列表 ---------- */
+async function loadCfg(){
+  const res = await fetch(base+'/v1/cs/configs/list',{
+    headers:{Authorization:'Bearer '+token}
+  }).then(r=>r.json());
+  if (res.code != 200 ) {
+    notifyError('获取配置列表失败:'+res.message);
+    return;
+  }
+  let html = '';
+  (res.data || []).forEach(c=>{
+    html+=`<tr><td>${c.dataId}</td><td>${c.group}</td><td><pre>${c.content}</pre></td>
+           <td><button onclick=delCfg('${c.dataId}','${c.group}')>删除</button></td></tr>`;
+  });
+  cfgTable.tBodies[0].innerHTML = html || '<tr><td colspan=4>暂无配置</td></tr>';
+}
+
+async function delCfg(dataId, group){
+  const res = await fetch(base+`/v1/cs/configs?dataId=${dataId}&group=${group}`,{
+    method:'DELETE',
+    headers:{Authorization:'Bearer '+token}
+  }).then(r=>r.json());
+  if (res.code == 200) {
+      notifySuccess("删除配置成功")
+      loadCfg();
+  } else {
+    notifyError("删除配置失败:"+res.message)
+  }
+
+}
+
+// 清空dataId groupId div
+async function clearInput(){
+    dataId.value = ''
+    groupId.value = ''
+    content.value = ''
+}
+
+
+/* ---------- 发布配置 ---------- */
+async function publishConfig(){
+  const body = {
+    dataId: dataId.value.trim(),
+    group: groupId.value.trim() || 'DEFAULT_GROUP',
+    content: content.value.trim()
+  };
+  const res = await fetch(base+'/v1/cs/configs',{
+    method:'POST',
+    headers:{'Content-Type':'application/json', Authorization:'Bearer '+token},
+    body:JSON.stringify(body)
+  }).then(r=>r.json());
+  if(res.code == 200){ 
+    notifySuccess('发布成功'); 
+    clearInput();
+    loadCfg(); 
+  } else {
+    notifyError('发布失败:'+res.message);
+  }
+}
+/* ===== 新增：退出登录 ===== */
+async function logout(){
+  notifySuccess('退出登录成功');
+  localStorage.removeItem('token');
+  location.reload();   // 回到登录页
+  return;
+}
+
+/* === 三色通知 === */
+function notify(msg, type = 'info', duration = 2500) {
+  const box = document.getElementById('notifyBox');
+  box.textContent = msg;
+  box.className = 'notify-' + type;   // 换颜色
+  box.style.opacity = '1';
+  setTimeout(() => box.style.opacity = '0', duration);
+}
+
+/* 快捷函数 */
+const notifySuccess = (msg, t) => notify(msg, 'success', t);
+const notifyError   = (msg, t) => notify(msg, 'error', t);
+const notifyInfo    = (msg, t) => notify(msg, 'info', t);
+
+
+/* ---------- 页面加载 ---------- */
+/* 登录成功后把退出按钮显示出来 */
+window.onload = () => {
+  if(token){
+    loginCard.style.display='none';
+    svcCard.style.display='block';
+    cfgCard.style.display='block';
+    pubCard.style.display='block';
+    document.getElementById('logoutBar').style.display='block'; // ★ 显示退出
+    loadSvc(); 
+    loadCfg();
+  }
+};
+</script>
+</body>
+</html>

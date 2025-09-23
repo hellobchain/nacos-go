@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"time"
 
 	"github.com/hellobchain/nacos-go/user"
 	"github.com/hellobchain/wswlog/wlogging"
@@ -24,8 +25,13 @@ func New(db *gorm.DB) user.UserRepo {
 	return &mysqlUserRepo{db: db}
 }
 
+type Model struct {
+	ID        uint `gorm:"primarykey"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
 type userPO struct {
-	gorm.Model
+	Model
 	Username string `gorm:"column:username;size:64;unique;not null"`
 	Password string `gorm:"column:password;size:128;not null"`
 }
