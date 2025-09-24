@@ -12,4 +12,5 @@ go build -trimpath -ldflags="-s -w" -o ..\bin\nacos-go.bin
 
 :: 2) 构建镜像
 cd /d "%~dp0"
+docker build -t github.com/hellobchain/nacos-go-web:%VERSION% -f .\docker\Dockerfile-front .
 docker build -t github.com/hellobchain/nacos-go:%VERSION% -f .\docker\Dockerfile-linux .
