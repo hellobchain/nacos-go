@@ -74,6 +74,23 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 		httpcode.Success(w, http.StatusOK, "success", item)
 	}).Methods(http.MethodGet)
 
+	// 修改配置
+	r.HandleFunc(constant.LIST_CONFIGS, func(w http.ResponseWriter, req *http.Request) {
+		if req.Method != http.MethodPut {
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		dataId := req.URL.Query().Get("dataId")
+		group := req.URL.Query().Get("group")
+		tenant := req.URL.Query().Get("tenantId")
+		item, err := svc.List(req.Context(), dataId, group, tenant)
+		if err != nil {
+			httpcode.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
+		httpcode.Success(w, http.StatusOK, "success", item)
+	}).Methods(http.MethodPut)
+
 	// 删除配置
 	r.HandleFunc(constant.CONFIGS_ROUTER, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodDelete {

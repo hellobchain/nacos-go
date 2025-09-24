@@ -20,3 +20,6 @@ curl "127.0.0.1:8848/v1/cs/configs?dataId=app.yaml&group=DEFAULT_GROUP"
 ### 4. 删除配置
 
 curl -X DELETE "127.0.0.1:8848/v1/cs/configs?dataId=app.yaml&group=DEFAULT_GROUP"
+
+## 前端使用
+http://127.0.0.1:8848/static/index.html

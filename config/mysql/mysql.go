@@ -12,10 +12,17 @@ import (
 )
 
 var logger = wlogging.MustGetFileLoggerWithoutName(nil)
+var _ config.ConfigRepo = (*configMysql)(nil)
 
 type configMysql struct {
 	db *gorm.DB
 }
+
+// Edit implements config.ConfigRepo.
+func (r *configMysql) Edit(ctx context.Context, dataId string, group string, tenant string, content string) error {
+	return nil
+}
+
 type Model struct {
 	ID        uint `gorm:"primarykey"`
 	CreatedAt time.Time

@@ -56,7 +56,7 @@
   <div id="pubCard" class="card" style="display:none">
     <h2>发布配置</h2>
     <input id="dataId" placeholder="DataId"><br>
-    <input id="groupId" placeholder="Group（默认 DEFAULT_GROUP）"><br>
+    <input id="groupId" placeholder="Group"><br>
     <textarea id="content" rows="6" cols="60" placeholder="配置内容"></textarea><br>
     <button onclick="publishConfig()">发布</button>
   </div>
@@ -155,7 +155,22 @@ async function delCfg(dataId, group, tenantId){
   } else {
     notifyError("删除配置失败:"+res.message)
   }
+}
 
+// 修改配置
+async function updateCfg(dataId, group, tenantId, content){ 
+    const body = {dataId, group, tenantId, content}
+    const res = await fetch(base+`/v1/cs/configs?dataId=${dataId}&group=${group}&tenantId=${tenantId}`,{
+    method:'PUT',
+    headers:{Authorization:'Bearer '+token},
+    body:content
+  }).then(r=>r.json());
+  if (res.code == 200) {
+      notifySuccess("修改配置成功")
+      loadCfg();
+  } else {
+    notifyError("修改配置失败:"+res.message)
+  }
 }
 
 // 清空dataId groupId div
@@ -170,9 +185,13 @@ async function clearInput(){
 async function publishConfig(){
   const body = {
     dataId: dataId.value.trim(),
-    group: groupId.value.trim() || 'DEFAULT_GROUP',
+    group: groupId.value.trim(),
     content: content.value.trim()
   };
+  if(!body.dataId || !body.group || !body.content){
+    notifyError('请填写完整')
+    return
+  }
   const res = await fetch(base+'/v1/cs/configs',{
     method:'POST',
     headers:{'Content-Type':'application/json', Authorization:'Bearer '+token},

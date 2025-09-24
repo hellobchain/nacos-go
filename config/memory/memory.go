@@ -16,6 +16,26 @@ type memoryRepo struct {
 	mu sync.RWMutex
 }
 
+// Edit implements config.ConfigRepo.
+func (r *memoryRepo) Edit(ctx context.Context, dataId string, group string, tenant string, content string) error {
+	key := mkKey(tenant, group, dataId)
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	item := r.m[key]
+	return r.Save(ctx, config.ConfigItem{
+		AppName: item.AppName,
+		BetaIps: item.BetaIps,
+		Content: content,
+		DataId:  dataId,
+		Group:   group,
+		Md5:     md5Str(content),
+		SrcIp:   item.SrcIp,
+		SrcUser: item.SrcUser,
+		Tenant:  tenant,
+		Type:    item.Type,
+	})
+}
+
 func New() config.ConfigRepo {
 	return &memoryRepo{m: make(map[string]config.ConfigItem)}
 }
