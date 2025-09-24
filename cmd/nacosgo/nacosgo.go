@@ -20,7 +20,6 @@ var logger = wlogging.MustGetFileLoggerWithoutName(nil)
 func StartServer(allService conf.AllService, serverPort int) {
 	// 启动 HTTP：把两个路由挂载到同端口
 	r := handle.NewLogRouter()
-	StaticFileRoute(r)
 	// 全局中间件（顺序：CORS → Logger → JWTAuth）
 	r.Use(middleware.CORS, middleware.Logger, middleware.JWTAuth)
 	service.RegistryRoute(r, allService.InstanceService) // 原 /nacos/v1/ns 路由
@@ -56,9 +55,4 @@ func StartHeartbeat(svc *service.RegistryService, heartBeatInternal time.Duratio
 			}
 		}
 	}()
-}
-
-func StaticFileRoute(r *handle.LogRouter) {
-	logger.Info("init static file route")
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 }

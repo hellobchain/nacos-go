@@ -3,6 +3,17 @@ networks:
   nacosnetwork:
 services:
 
+  nacos-go-web:
+    image: github.com/hellobchain/nacos-go-web:v1.0.0
+    container_name: nacos-go-web
+    volumes:
+      - ./nginx/logs://var/log/nginx
+    ports:
+      - "80:80"
+    restart: always
+    networks:
+      - nacosnetwork
+
   nacos-go-server:
     image: github.com/hellobchain/nacos-go:v1.0.0
     container_name: nacos-go-server
@@ -11,14 +22,15 @@ services:
       - NACOS_DB_DRIVER=mysql
     volumes:
       - ./logs:/nacos-go/logs
-    ports:
-      - "8848:8848"
+    # ports:
+    #   - "8848:8848"
     restart: always
     command: nacos-go.bin -conf nacos.yml
     networks:
       - nacosnetwork
     depends_on:
       - nacos-go-db
+
   nacos-go-db:
     image: mysql:5.7
     container_name: nacos-go-db
