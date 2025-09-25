@@ -28,7 +28,9 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		item.Tenant = uuid.New().String()
+		if item.Tenant == "" {
+			item.Tenant = uuid.New().String()
+		}
 		item.SrcIp = req.Header.Get(constant.SRC_IP)
 		req.Header.Del(constant.SRC_IP)
 		item.SrcUser = req.Header.Get(constant.SRC_USER)

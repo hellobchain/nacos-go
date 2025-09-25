@@ -7,6 +7,9 @@ import (
 	"github.com/hellobchain/nacos-go/service"
 	daoMemory "github.com/hellobchain/nacos-go/service/memory"
 	daoMysql "github.com/hellobchain/nacos-go/service/mysql"
+	"github.com/hellobchain/nacos-go/tenant"
+	tenantMemory "github.com/hellobchain/nacos-go/tenant/memory"
+	tenantMysql "github.com/hellobchain/nacos-go/tenant/mysql"
 	"github.com/hellobchain/nacos-go/user"
 	userMemory "github.com/hellobchain/nacos-go/user/memory"
 	userMysql "github.com/hellobchain/nacos-go/user/mysql"
@@ -19,6 +22,7 @@ type AllConfig struct {
 	InstanceRepo service.InstanceRepo
 	UserRepo     user.UserRepo
 	ConfigRepo   config.ConfigRepo
+	TenantRepo   tenant.TenantRepo
 }
 
 func InitAllConfig(driver string, dsn string) AllConfig {
@@ -30,6 +34,7 @@ func InitAllConfig(driver string, dsn string) AllConfig {
 		allConfig.ConfigRepo = configMysql.NewConfigRepo(db)
 		allConfig.InstanceRepo = dbService
 		allConfig.UserRepo = userMysql.New(db)
+		allConfig.TenantRepo = tenantMysql.New(db)
 	case "memory":
 		fallthrough
 	default:
@@ -37,6 +42,7 @@ func InitAllConfig(driver string, dsn string) AllConfig {
 		allConfig.ConfigRepo = configMemory.New()
 		allConfig.InstanceRepo = daoMemory.New()
 		allConfig.UserRepo = userMemory.New()
+		allConfig.TenantRepo = tenantMemory.New()
 	}
 	return allConfig
 }
@@ -45,6 +51,7 @@ type AllService struct {
 	InstanceService *service.RegistryService
 	ConfigService   *config.Service
 	UserService     *user.AuthUserService
+	TenantService   *tenant.Service
 }
 
 func InitAllService(allConfig AllConfig) AllService {
@@ -52,6 +59,7 @@ func InitAllService(allConfig AllConfig) AllService {
 	allService.InstanceService = service.NewRegistryService(allConfig.InstanceRepo)
 	allService.ConfigService = config.NewService(allConfig.ConfigRepo)
 	allService.UserService = user.NewAuthUserService(allConfig.UserRepo)
+	allService.TenantService = tenant.NewService(allConfig.TenantRepo)
 	user.InitAdminUser(allService.UserService)
 	return allService
 }

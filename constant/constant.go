@@ -35,3 +35,8 @@ const (
 	SRC_USER = "srcUser"
 	SRC_IP   = "srcIp"
 )
+
+// tenant
+const (
+	TENANT_ROUTER = "/nacos/v1/cs/tenants"
+)

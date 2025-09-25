@@ -11,6 +11,7 @@ import (
 	"github.com/hellobchain/nacos-go/handle"
 	"github.com/hellobchain/nacos-go/middleware"
 	"github.com/hellobchain/nacos-go/service"
+	"github.com/hellobchain/nacos-go/tenant"
 	"github.com/hellobchain/nacos-go/user"
 	"github.com/hellobchain/wswlog/wlogging"
 )
@@ -24,6 +25,7 @@ func StartServer(allService conf.AllService, serverPort int) {
 	r.Use(middleware.CORS, middleware.Logger, middleware.JWTAuth)
 	service.RegistryRoute(r, allService.InstanceService) // 原 /nacos/v1/ns 路由
 	config.ConfigRoute(r, allService.ConfigService)      // 新增 /v1/cs 路由
+	tenant.TetantRoute(r, allService.TenantService)      // 新增 /v1/tenant
 	user.AuthRoute(r, allService.UserService)            // 新增 /v1/auth
 	if serverPort == 0 {
 		logger.Warnf("Invalid server port %d, use default %d", serverPort, constant.DEFAULT_SERVER_PORT)

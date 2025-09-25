@@ -19,3 +19,4 @@ logs
 shell/
 go.sum
 db_data/
+nginx/
