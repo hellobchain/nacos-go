@@ -22,8 +22,8 @@ services:
       - NACOS_DB_DRIVER=mysql
     volumes:
       - ./logs:/nacos-go/logs
-    # ports:
-    #   - "8848:8848"
+    ports:
+      - "8848:8848"
     restart: always
     command: nacos-go.bin -conf nacos.yml
     networks:

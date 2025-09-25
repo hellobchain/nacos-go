@@ -21,5 +21,14 @@ curl "127.0.0.1:8848/v1/cs/configs?dataId=app.yaml&group=DEFAULT_GROUP"
 
 curl -X DELETE "127.0.0.1:8848/v1/cs/configs?dataId=app.yaml&group=DEFAULT_GROUP"
 
-## 前端使用
-http://127.0.0.1:8848/static/index.html
+# 前端
+
+```json
+cd nacos-go-vue-console
+// 本地开发
+npm run serve
+// 打包测试环境
+npm run build:test      // 生成 dist-test 文件夹
+// 打包正式环境
+npm run build:prod      // 生成 dist 文件夹
+```
