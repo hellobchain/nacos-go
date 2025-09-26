@@ -1,7 +1,7 @@
 <template>
   <div class="card">
     <div class="header">
-      <h2 class="title">Tenant 管理</h2>
+      <h2 class="title">空间管理</h2>
       <button class="refresh" @click="load">刷新</button>
     </div>
 
@@ -18,14 +18,14 @@
           </td>
         </tr>
         <tr v-if="!list.length">
-          <td colspan="2" class="empty">暂无 Tenant</td>
+          <td colspan="2" class="empty">暂无空间</td>
         </tr>
       </tbody>
     </table>
 
     <!-- 新增 -->
     <div class="add-line">
-      <input v-model="newT" class="input" placeholder="新 Tenant 名称" @keyup.enter="add" />
+      <input v-model="newT" class="input" placeholder="新空间名称" @keyup.enter="add" />
       <button class="btn primary" @click="add">添加</button>
     </div>
   </div>
@@ -48,7 +48,7 @@ export default {
       this.load()
     },
     async del(t) {
-      if (!confirm(`确认删除 Tenant：${t} ？`)) return
+      if (!confirm(`确认删除空间${t} ？`)) return
       await delTenant(t)
       Notify.success('删除成功')
       this.load()

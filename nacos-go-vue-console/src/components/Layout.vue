@@ -32,7 +32,7 @@ import { Notify } from '@/components/Notify'
 export default {
   data: () => ({
     menu: [
-      { path: '/tenant', title: 'Tenant' },
+      { path: '/tenant', title: '空间' },
       { path: '/service', title: '服务' },
       { path: '/config',  title: '配置' },
       { path: '/publish', title: '发布' }
