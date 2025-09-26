@@ -8,7 +8,7 @@
     <!-- 列表 -->
     <table class="list">
       <thead>
-        <tr><th>Tenant</th><th>操作</th></tr>
+        <tr><th>空间</th><th>操作</th></tr>
       </thead>
       <tbody>
         <tr v-for="t in list" :key="t" class="hover-row">

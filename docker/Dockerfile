@@ -19,7 +19,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositorie
 WORKDIR /nacos-go
 # 将二进制文件从 /build 目录复制到这里
 COPY --from=build /build/nacos.yml /nacos-go/nacos.yml
-COPY --from=build /build/static /nacos-go/static
 COPY --from=build /build/bin/nacos-go.bin /usr/local/bin
 
 # 启动容器时运行的命令
