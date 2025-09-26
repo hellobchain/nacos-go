@@ -133,7 +133,7 @@ export default {
   display: flex;
   gap: 8px;
 }
-
+/* 按钮 */
 .btn {
   padding: 4px 12px;
   border: none;
@@ -142,13 +142,16 @@ export default {
   cursor: pointer;
   transition: opacity 0.2s;
 }
+/* 按钮 - 悬浮 */
 .btn:hover {
   opacity: 0.85;
 }
+/* 按钮 - 主要 */
 .primary {
   background: #1890ff;
   color: #fff;
 }
+/* 按钮 - 危险 */
 .danger {
   background: #ff4d4f;
   color: #fff;

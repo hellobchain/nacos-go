@@ -67,7 +67,7 @@ export default {
   font-weight: 500;
   color: #333;
 }
-
+/* 退出登录按钮 */
 .logout-btn {
   padding: 6px 16px;
   border: none;
@@ -78,6 +78,7 @@ export default {
   cursor: pointer;
   transition: opacity 0.2s;
 }
+/* 退出登录按钮 - 悬浮 */
 .logout-btn:hover {
   opacity: 0.85;
 }
@@ -90,7 +91,7 @@ export default {
   background: #fff;
   border-bottom: 1px solid #e6e6e6;
 }
-
+/* 导航项 */
 .nav-item {
   padding: 8px 16px;
   border-radius: 4px;
@@ -99,10 +100,12 @@ export default {
   text-decoration: none;
   transition: background 0.2s, color 0.2s;
 }
+/* 导航项 - 悬浮和激活 */
 .nav-item:hover {
   background: #f3f9ff;
   color: #1890ff;
 }
+/* 激活的导航项 */
 .nav-item.active {
   background: #e6f7ff;
   color: #1890ff;

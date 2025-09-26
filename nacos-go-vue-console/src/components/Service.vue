@@ -53,31 +53,33 @@ export default {
 </script>
 
 <style scoped>
+/* 卡片样式 */
 .card {
   background: #fff;
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 20px 24px;
 }
-
+/* 标题 */
 .title {
   text-align: center;
   font-size: 24px;
   margin: 0 0 20px;
 }
-
+/* 空状态 */
 .empty {
   text-align: center;
   padding: 60px 0;
   color: #999;
+  font-size: 15px;
 }
-
+/* 表格 */
 .list {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
-
+/* 表头 */
 .list th {
   background: #fafafa;
   padding: 10px 12px;
@@ -85,7 +87,7 @@ export default {
   font-weight: 600;
   color: #333;
 }
-
+/* 表格单元格 */
 .list td {
   padding: 10px 12px;
   border-bottom: 1px solid #f0f0f0;
@@ -100,12 +102,12 @@ export default {
 .hover-row:hover {
   background: #f3f9ff !important;
 }
-
+/* 服务名 */
 .name {
   font-weight: 500;
   color: #262626;
 }
-
+/* 省略号 */
 .ellipsis {
   max-width: 160px;
   white-space: nowrap;
@@ -121,21 +123,23 @@ export default {
   font-size: 12px;
   font-weight: 500;
 }
+/* 状态标签 - 成功 */
 .success {
   background: #f6ffed;
   color: #52c41a;
   border: 1px solid #b7eb8f;
 }
+/* 状态标签 - 危险 */
 .danger {
   background: #fff1f0;
   color: #ff4d4f;
   border: 1px solid #ffccc7;
 }
-
+/* 操作列 */
 .actions {
   text-align: right;
 }
-
+/* 按钮 */
 .btn {
   padding: 4px 12px;
   border: none;
@@ -144,9 +148,11 @@ export default {
   cursor: pointer;
   transition: opacity 0.2s;
 }
+/* 按钮 - 危险 */
 .btn:hover {
   opacity: 0.85;
 }
+/* 按钮 - 危险 */
 .danger {
   background: #ff4d4f;
   color: #fff;

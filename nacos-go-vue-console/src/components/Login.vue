@@ -57,6 +57,7 @@ export default {
   gap: 20px;
 }
 
+/* 标题 */
 .title {
   margin: 0 0 8px;
   font-size: 26px;
@@ -64,6 +65,7 @@ export default {
   color: #262626;
 }
 
+/* 输入框 */
 .input {
   width: 100%;
   padding: 12px 16px;
@@ -72,12 +74,13 @@ export default {
   border-radius: 8px;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
+/* 输入框 - 聚焦 */
 .input:focus {
   border-color: #1890ff;
   box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.15);
   outline: none;
 }
-
+/* 按钮 */
 .btn {
   width: 100%;
   padding: 12px;
@@ -90,10 +93,12 @@ export default {
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+/* 按钮 - 悬浮和点击 */
 .btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(24, 144, 255, 0.35);
 }
+/* 按钮 - 点击 */
 .btn:active {
   transform: translateY(0);
 }

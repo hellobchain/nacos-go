@@ -58,26 +58,27 @@ export default {
 </script>
 
 <style scoped>
+/* 卡片样式 */
 .card {
   background: #fff;
   border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   padding: 20px 24px;
 }
-
+/* 标题和刷新按钮 */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
 }
-
+/* 标题 */
 .title {
   margin: 0;
   font-size: 24px;
   font-weight: 500;
 }
-
+/* 刷新按钮 */
 .refresh {
   padding: 4px 12px;
   font-size: 13px;
@@ -88,16 +89,17 @@ export default {
   cursor: pointer;
   transition: opacity 0.2s;
 }
+/* 刷新按钮:hover */
 .refresh:hover {
   opacity: 0.85;
 }
-
+/* 表格 */
 .list {
   width: 100%;
   border-collapse: collapse;
   font-size: 14px;
 }
-
+/* 表头 */
 .list th {
   background: #fafafa;
   padding: 10px 12px;
@@ -105,7 +107,7 @@ export default {
   font-weight: 600;
   color: #333;
 }
-
+/* 表格单元格 */
 .list td {
   padding: 10px 12px;
   border-bottom: 1px solid #f0f0f0;
@@ -120,28 +122,28 @@ export default {
 .hover-row:hover {
   background: #f3f9ff !important;
 }
-
+/* 空状态 */
 .name {
   font-weight: 500;
   color: #262626;
 }
-
+/* 操作列 */
 .actions {
   text-align: right;
 }
-
+/* 空状态 */
 .empty {
   text-align: center;
   padding: 40px 0;
   color: #999;
 }
-
+/* 新增行 */
 .add-line {
   margin-top: 16px;
   display: flex;
   gap: 8px;
 }
-
+/* 输入框 */
 .input {
   flex: 1;
   padding: 6px 10px;
@@ -149,7 +151,7 @@ export default {
   border: 1px solid #d9d9d9;
   border-radius: 4px;
 }
-
+/* 输入框 - 聚焦 */
 .btn {
   padding: 6px 16px;
   border: none;
@@ -158,13 +160,16 @@ export default {
   cursor: pointer;
   transition: opacity 0.2s;
 }
+/* 按钮 - 悬浮 */
 .btn:hover {
   opacity: 0.85;
 }
+/* 按钮 - 主次区分 */
 .primary {
   background: #1890ff;
   color: #fff;
 }
+/* 按钮 - 危险 */
 .danger {
   background: #ff4d4f;
   color: #fff;
