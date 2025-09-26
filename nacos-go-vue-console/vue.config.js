@@ -2,6 +2,7 @@ const path = require('path')
 module.exports = {
     outputDir: process.env.VUE_APP_OUTPUT_DIR || 'dist',
     publicPath: process.env.VUE_APP_PUBLIC_PATH || './',
+    css: { extract: false },   // 禁用单独 css 文件
     productionSourceMap: false,
     configureWebpack: {
         resolve: {
