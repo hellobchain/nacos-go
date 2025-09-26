@@ -1,6 +1,7 @@
 <template>
   <div class="card">
-    <h2>服务实例</h2>
+    <div class="box">
+    <h2 class="title">服务实例</h2>
     <table>
       <thead><tr><th>服务名</th><th>分组</th><th>IP:端口</th><th>健康</th><th>操作</th></tr></thead>
       <tbody>
@@ -13,6 +14,7 @@
       </tbody>
     </table>
   </div>
+</div>
 </template>
 <script>
 import { getInstances, deregister } from '@/api/service'
@@ -28,3 +30,28 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.box {
+  width: 600px;
+  padding: 40px 24px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column; 
+  gap: 12px;
+}
+
+button {
+  align-self: center;     /* 按钮居中 */
+  padding: 6px 20px;
+  font-size: large;
+}
+
+.title {
+  text-align: center;   /* 水平居中 */
+  font-size: 24px;      /* 字号变大，默认 ~16px */
+  margin: 0 0 16px;     /* 去掉默认上下外边距，再留点底距 */
+}
+</style>
