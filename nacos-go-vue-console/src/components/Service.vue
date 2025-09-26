@@ -61,10 +61,9 @@ export default {
 }
 
 .title {
-  margin: 0 0 16px;
-  font-size: 20px;
-  font-weight: 500;
   text-align: center;
+  font-size: 24px;
+  margin: 0 0 20px;
 }
 
 .empty {
