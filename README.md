@@ -21,7 +21,7 @@ curl "127.0.0.1:8848/v1/cs/configs?dataId=app.yaml&group=DEFAULT_GROUP"
 
 curl -X DELETE "127.0.0.1:8848/v1/cs/configs?dataId=app.yaml&group=DEFAULT_GROUP"
 
-# 前端
+## 前端
 
 ```json
 cd nacos-go-vue-console
