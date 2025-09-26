@@ -1,12 +1,12 @@
 <template>
-  <!-- 全屏遮罩，上下左右居中 -->
   <div class="wrapper">
-    <div class="box">
-      <h2 class="title">登录</h2> 
-      <input v-model="user" placeholder="用户名" style="width: 80%; font-size: large; align-self: center;" />
-      <input v-model="pwd" type="password" placeholder="密码"  style="width: 80%; font-size: large; align-self: center;" 
-      @keyup.enter="handleLogin" />
-      <button @click="handleLogin">登录</button>
+    <div class="glass">
+      <h2 class="title">登录</h2>
+
+      <input v-model="user" class="input" placeholder="用户名" />
+      <input v-model="pwd" class="input" type="password" placeholder="密码" @keyup.enter="handleLogin" />
+
+      <button class="btn" @click="handleLogin">登录</button>
     </div>
   </div>
 </template>
@@ -34,36 +34,68 @@ export default {
 </script>
 
 <style scoped>
-/* 关键代码：绝对居中 */
+/* 全屏居中 */
 .wrapper {
-  position: fixed;
-  inset: 0;               /* top:0 right:0 bottom:0 left:0 */
+  height: 100vh;
   display: flex;
-  align-items: center;    /* 垂直居中 */
-  justify-content: center;/* 水平居中 */
-  background: #f7f7f7;    /* 可视背景，可删 */
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #83a4d4 0%, #b6fbff 100%);
 }
 
-.box {
-  width: 320px;
-  padding: 40px 24px;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+/* 玻璃卡片 */
+.glass {
+  width: 360px;
+  padding: 40px 32px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 12px;
-}
-
-button {
-  align-self: center;     /* 按钮居中 */
-  padding: 6px 20px;
-  font-size: large;
+  align-items: center;
+  gap: 20px;
 }
 
 .title {
-  text-align: center;   /* 水平居中 */
-  font-size: 24px;      /* 字号变大，默认 ~16px */
-  margin: 0 0 16px;     /* 去掉默认上下外边距，再留点底距 */
+  margin: 0 0 8px;
+  font-size: 26px;
+  font-weight: 500;
+  color: #262626;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.15);
+  outline: none;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  background: linear-gradient(90deg, #1890ff 0%, #45b7ff 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(24, 144, 255, 0.35);
+}
+.btn:active {
+  transform: translateY(0);
 }
 </style>
+
