@@ -7,7 +7,7 @@
       <input class="input" v-model="form.group" placeholder="Group" />
 
       <select class="input" v-model="form.tenant">
-        <option value="">（空）</option>
+        <!-- <option value="">（空）</option> -->
         <option v-for="t in tenants" :key="t" :value="t">{{ t }}</option>
       </select>
 
