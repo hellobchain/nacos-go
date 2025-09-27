@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"encoding/hex"
 	"errors"
 	"os"
 
@@ -30,7 +31,14 @@ func (s *AuthUserService) Login(ctx context.Context, username, password string) 
 	if err != nil {
 		return "", "", err
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
+	passwordBytes, _ := hex.DecodeString(password)
+	plainBytes, err := utils.DefaultAesTool.Decrypt(passwordBytes)
+	if err != nil {
+		logger.Errorf("decrypt password error, err: %v", err)
+		return "", "", errors.New("decrypt password error")
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), plainBytes); err != nil {
+		logger.Errorf("wrong password, err: %v", err)
 		return "", "", errors.New("wrong password")
 	}
 	uuidStr := utils.GetPureUUID()

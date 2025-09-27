@@ -14,6 +14,7 @@
 <script>
 import { login } from '@/api/auth'
 import { Notify } from '@/components/Notify'
+import { encryptByAesEcb } from '@/utils/crypto'
 export default {
   data() {
     return { user: '', pwd: '' }
@@ -22,7 +23,7 @@ export default {
     async handleLogin() {
       if (!this.user || !this.pwd) return Notify.error('请输入账号密码')
       try {
-        const res = await login({ username: this.user, password: this.pwd })
+        const res = await login({ username: this.user, password: encryptByAesEcb(this.pwd) })
         this.$store.commit('SET_TOKEN', res.accessToken)
         this.$router.replace('/')
       } catch {
