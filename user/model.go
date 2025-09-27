@@ -1,7 +1,8 @@
 package user
 
 type User struct {
-	ID       int64
-	Username string
-	Password string // bcrypt 哈希
+	ID       int64  `json:"id"`
+	Username string `json:"userName"`
+	Password string `json:"-"`
+	Role     string `json:"role"`
 }

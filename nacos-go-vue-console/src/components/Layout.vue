@@ -3,22 +3,26 @@
     <!-- 顶部栏 -->
     <header class="header">
       <div class="left">Nacos-Go 控制台</div>
-      <div class="right">
-        <button class="logout-btn" @click="logout">退出登录</button>
-      </div>
     </header>
 
-    <!-- 导航栏 -->
+    <!-- 导航栏 + 底部菜单 -->
     <nav class="nav">
-      <router-link
-        v-for="item in menu"
-        :key="item.path"
-        :to="item.path"
-        class="nav-item"
-        active-class="active"
-      >
-        {{ item.title }}
-      </router-link>
+      <div class="top">
+        <router-link
+          v-for="item in menu"
+          :key="item.path"
+          :to="item.path"
+          class="nav-item"
+          active-class="active"
+        >
+          {{ item.title }}
+        </router-link>
+      </div>
+
+      <!-- 左侧底部退出 -->
+      <div class="bottom">
+        <a class="logout-item" @click="logout">退出登录</a>
+      </div>
     </nav>
 
     <!-- 内容区 -->
@@ -27,6 +31,7 @@
     </main>
   </div>
 </template>
+
 <script>
 import { Notify } from '@/components/Notify'
 export default {
@@ -35,7 +40,8 @@ export default {
       { path: '/tenant', title: '空间' },
       { path: '/service', title: '服务' },
       { path: '/config',  title: '配置' },
-      { path: '/publish', title: '发布' }
+      { path: '/publish', title: '发布' },
+      { path: '/profile', title: '个人中心'}
     ]
   }),
   methods: {
@@ -51,69 +57,81 @@ export default {
 <style scoped>
 .layout {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: #f7f7f7;
 }
 
-/* 顶部栏 */
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding: 0 24px;
   height: 56px;
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,.05);
   font-size: 18px;
   font-weight: 500;
   color: #333;
 }
-/* 退出登录按钮 */
-.logout-btn {
-  padding: 6px 16px;
-  border: none;
-  border-radius: 4px;
-  background: #ff4d4f;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-/* 退出登录按钮 - 悬浮 */
-.logout-btn:hover {
-  opacity: 0.85;
+
+.nav {
+  width: 200px;                     /* 左侧菜单宽度 */
+  background: #fff;
+  border-right: 1px solid #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;   /* 顶部导航 + 底部退出 */
+  padding: 12px 0;
+  position: fixed;
+  left: 0;
+  top: 56px;
+  bottom: 0;
 }
 
-/* 导航栏 */
-.nav {
+.top {
   display: flex;
+  flex-direction: column;
   gap: 4px;
-  padding: 8px 24px;
-  background: #fff;
-  border-bottom: 1px solid #e6e6e6;
+  padding: 0 12px;
 }
-/* 导航项 */
+
 .nav-item {
-  padding: 8px 16px;
+  padding: 10px 14px;
   border-radius: 4px;
   font-size: 15px;
   color: #595959;
   text-decoration: none;
-  transition: background 0.2s, color 0.2s;
+  transition: background .2s, color .2s;
 }
-/* 导航项 - 悬浮和激活 */
 .nav-item:hover {
   background: #f3f9ff;
   color: #1890ff;
 }
-/* 激活的导航项 */
 .nav-item.active {
   background: #e6f7ff;
   color: #1890ff;
   font-weight: 500;
 }
 
-/* 内容区 */
+.bottom {
+  padding: 0 12px;
+}
+.logout-item {
+  display: block;
+  padding: 10px 14px;
+  border-radius: 4px;
+  font-size: 15px;
+  color: #595959;
+  cursor: pointer;
+  transition: background .2s;
+}
+.logout-item:hover {
+  background: #ffece8;
+  color: #ff4d4f;
+}
+
 .main {
+  margin-left: 200px;   /* 对应 nav 宽度 */
   padding: 24px;
 }
 </style>

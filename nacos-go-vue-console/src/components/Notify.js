@@ -4,6 +4,7 @@ style.innerHTML = `
 .notify-success{background:#52c41a}
 .notify-error{background:#ff4d4f}
 .notify-info{background:#1890ff}
+.notify-warning{background:#faad14}
 `
 document.head.appendChild(style)
 const box = document.createElement('div')
@@ -15,4 +16,4 @@ function show(msg, type = 'info', duration = 2500) {
     box.style.opacity = '1'
     setTimeout(() => (box.style.opacity = '0'), duration)
 }
-export const Notify = { success: m => show(m, 'success'), error: m => show(m, 'error'), info: m => show(m, 'info') }
+export const Notify = { success: m => show(m, 'success'), error: m => show(m, 'error'), info: m => show(m, 'info'), warning: m => show(m, 'warning') }

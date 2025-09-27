@@ -11,7 +11,8 @@ const routes = [
             { path: 'tenant', component: () => import('@/components/Tenant.vue') },
             { path: 'service', component: () => import('@/components/Service.vue') },
             { path: 'config', component: () => import('@/components/Config.vue') },
-            { path: 'publish', component: () => import('@/components/Publish.vue') }
+            { path: 'publish', component: () => import('@/components/Publish.vue') },
+            { path: 'profile', component: () => import('@/components/Profile.vue') }
         ]
     }
 ]

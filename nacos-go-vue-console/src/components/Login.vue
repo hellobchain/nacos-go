@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import { login } from '@/api/auth'
+import { login,getUserInfo } from '@/api/auth'
+
 import { Notify } from '@/components/Notify'
 import { encryptByAesEcb } from '@/utils/crypto'
 export default {
@@ -25,6 +26,10 @@ export default {
       try {
         const res = await login({ username: this.user, password: encryptByAesEcb(this.pwd) })
         this.$store.commit('SET_TOKEN', res.accessToken)
+        // 获取用户信息
+        const userInfo = await getUserInfo()
+        localStorage.setItem('userName', userInfo.userName)
+        localStorage.setItem('role', userInfo.role)
         this.$router.replace('/')
       } catch {
         Notify.error('登录失败，请检查账号密码')

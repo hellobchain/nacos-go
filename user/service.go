@@ -49,6 +49,43 @@ func (s *AuthUserService) Login(ctx context.Context, username, password string) 
 	return token, uuidStr, nil
 }
 
+// 获取用户信息
+func (s *AuthUserService) GetUserInfo(ctx context.Context, username string) (*User, error) {
+	u, err := s.repo.GetByName(ctx, username)
+	if err != nil {
+		return nil, err
+	}
+	return u, nil
+}
+
+func (s *AuthUserService) ChangePassword(ctx context.Context, username, oldPassword, newPassword string) error {
+	u, err := s.repo.GetByName(ctx, username)
+	if err != nil {
+		return err
+	}
+	oldPasswordBytes, _ := hex.DecodeString(oldPassword)
+	oldPlainBytes, err := utils.DefaultAesTool.Decrypt(oldPasswordBytes)
+	if err != nil {
+		logger.Errorf("decrypt password error, err: %v", err)
+		return errors.New("decrypt password error")
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), oldPlainBytes); err != nil {
+		logger.Errorf("wrong password, err: %v", err)
+		return errors.New("wrong password")
+	}
+	newPasswordBytes, _ := hex.DecodeString(newPassword)
+	newPlainBytes, err := utils.DefaultAesTool.Decrypt(newPasswordBytes)
+	if err != nil {
+		logger.Errorf("decrypt password error, err: %v", err)
+		return errors.New("decrypt password error")
+	}
+	updateUser := &User{
+		ID:       u.ID,
+		Password: string(newPlainBytes),
+	}
+	return s.repo.Save(ctx, updateUser)
+}
+
 func InitAdminUser(svc *AuthUserService) {
 	username := os.Getenv("NACOS_ADMIN")
 	if username == "" {

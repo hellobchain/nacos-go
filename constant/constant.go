@@ -29,6 +29,7 @@ const (
 const (
 	// 用户登录
 	AUTH_LOGIN = "/nacos/v1/auth/login"
+	USER_INFO  = "/nacos/v1/auth/user"
 )
 
 const (
