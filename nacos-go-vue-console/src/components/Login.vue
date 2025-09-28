@@ -25,12 +25,14 @@ export default {
       if (!this.user || !this.pwd) return Notify.error('请输入账号密码')
       try {
         const res = await login({ username: this.user, password: encryptByAesEcb(this.pwd) })
+        Notify.success('登录成功')
         this.$store.commit('SET_TOKEN', res.accessToken)
         // 获取用户信息
         const userInfo = await getUserInfo()
         localStorage.setItem('userName', userInfo.userName)
         localStorage.setItem('role', userInfo.role)
         this.$router.replace('/')
+
       } catch {
         Notify.error('登录失败，请检查账号密码')
       }
