@@ -37,10 +37,11 @@ import { Notify } from '@/components/Notify'
 export default {
   data: () => ({
     menu: [
-      { path: '/tenant', title: '空间' },
-      { path: '/service', title: '服务' },
-      { path: '/config',  title: '配置' },
-      { path: '/publish', title: '发布' },
+      { path: '/tenant', title: '空间管理' },
+      { path: '/service', title: '服务管理' },
+      { path: '/config',  title: '配置管理' },
+      { path: '/publish', title: '发布管理' },
+      { path: '/user', title: '用户管理'},
       { path: '/profile', title: '个人中心'}
     ]
   }),

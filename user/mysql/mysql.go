@@ -34,6 +34,7 @@ type userPO struct {
 	Model
 	Username string `gorm:"column:username;size:64;unique;not null"`
 	Password string `gorm:"column:password;size:128;not null"`
+	Role     string `gorm:"column:role;size:16;default:user"`
 }
 
 func (userPO) TableName() string { return "user" }
@@ -57,7 +58,25 @@ func (r *mysqlUserRepo) GetByName(ctx context.Context, username string) (*user.U
 	if err := r.db.WithContext(ctx).Where("username = ?", username).First(&po).Error; err != nil {
 		return nil, user.ErrNotFound
 	}
-	return &user.User{ID: int64(po.ID), Username: po.Username, Password: po.Password}, nil
+	return &user.User{ID: int64(po.ID), Username: po.Username, Password: po.Password, Role: po.Role}, nil
+}
+
+// 获取所有用户
+func (r *mysqlUserRepo) List(ctx context.Context) ([]*user.User, error) {
+	var pos []userPO
+	if err := r.db.WithContext(ctx).Find(&pos).Error; err != nil {
+		return nil, err
+	}
+	var users []*user.User
+	for _, po := range pos {
+		users = append(users, &user.User{ID: int64(po.ID), Username: po.Username, Password: po.Password, Role: po.Role})
+	}
+	return users, nil
+}
+
+// 删除用户
+func (r *mysqlUserRepo) Delete(ctx context.Context, username string) error {
+	return r.db.WithContext(ctx).Where("username = ?", username).Delete(&userPO{}).Error
 }
 
 func isHash(s string) bool {

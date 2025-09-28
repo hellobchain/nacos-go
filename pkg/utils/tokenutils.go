@@ -19,10 +19,10 @@ func GetSecret() string {
 }
 
 // NewSignedToken new signed token
-func NewSignedToken(userId int64, userName string, userType string, uuid string, expireHour int) (string, error) {
+func NewSignedToken(userId int64, username string, userType string, uuid string, expireHour int) (string, error) {
 	claims := &JwtClaims{
 		UserId:   userId,
-		UserName: userName,
+		UserName: username,
 		UserType: userType,
 		Uuid:     uuid,
 	}

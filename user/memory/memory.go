@@ -13,6 +13,25 @@ type memoryUserRepo struct {
 	mu sync.RWMutex
 }
 
+// Delete implements user.UserRepo.
+func (r *memoryUserRepo) Delete(ctx context.Context, username string) error {
+	r.mu.Lock()
+	delete(r.m, username)
+	r.mu.Unlock()
+	return nil
+}
+
+// List implements user.UserRepo.
+func (r *memoryUserRepo) List(ctx context.Context) ([]*user.User, error) {
+	r.mu.RLock()
+	users := make([]*user.User, 0, len(r.m))
+	for _, u := range r.m {
+		users = append(users, u)
+	}
+	r.mu.RUnlock()
+	return users, nil
+}
+
 func New() user.UserRepo {
 	return &memoryUserRepo{m: make(map[string]*user.User)}
 }

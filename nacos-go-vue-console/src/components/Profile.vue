@@ -7,7 +7,7 @@
       <div class="info">
         <div class="row">
           <span class="label">用户名称：</span>
-          <span class="val">{{ userInfo.userName }}</span>
+          <span class="val">{{ userInfo.username }}</span>
         </div>
         <div class="row">
           <span class="label">角色：</span>
@@ -72,7 +72,7 @@ export default {
   data() {
     return {
       userInfo: {
-        userName: localStorage.getItem('userName') || 'nacos',
+        username: localStorage.getItem('username') || 'nacos',
         role: localStorage.getItem('role') || '管理员'
       },
       showDialog: false,
@@ -85,7 +85,7 @@ export default {
   },
   created() {
     // 演示：从 localStorage 拿用户名，真实项目请改 vuex
-    this.userInfo.userName = localStorage.getItem('userName') || 'Admin'
+    this.userInfo.username = localStorage.getItem('username') || 'nacos'
   },
   methods: {
     openPwdDialog() {
@@ -102,7 +102,7 @@ export default {
       if (newPwd !== confirm) return Notify.warning('两次密码不一致')
       try {
         await changePassword({
-          username: this.userInfo.userName,
+          username: this.userInfo.username,
           oldPassword: encryptByAesEcb(oldPwd),
           newPassword: encryptByAesEcb(newPwd)
         })

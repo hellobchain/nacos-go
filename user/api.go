@@ -27,6 +27,10 @@ func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		if req.Username == "" || req.Password == "" {
+			httpcode.Error(w, "username or password required", http.StatusBadRequest)
+			return
+		}
 		token, uuid, err := as.Login(r.Context(), req.Username, req.Password)
 		if err != nil {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
@@ -40,9 +44,9 @@ func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		userName := r.Header.Get(constant.SRC_USER)
+		username := r.Header.Get(constant.SRC_USER)
 		r.Header.Del(constant.SRC_USER)
-		user, err := as.GetUserInfo(r.Context(), userName)
+		user, err := as.GetUserInfo(r.Context(), username)
 		if err != nil {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -63,11 +67,93 @@ func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		if req.Username == "" || req.OldPassword == "" || req.NewPassword == "" {
+			httpcode.Error(w, "username or password required", http.StatusBadRequest)
+			return
+		}
 		if err := as.ChangePassword(r.Context(), req.Username, req.OldPassword, req.NewPassword); err != nil {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		httpcode.Success(w, http.StatusOK, "success", "true")
 	}).Methods(http.MethodPost)
+
+	// 	export const addUser = data => request({ url: '/v1/auth/user/register', method: 'post', data })
+	r.HandleFunc(constant.REGISTER_USER, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		var req struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			httpcode.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if req.Username == "" || req.Password == "" {
+			httpcode.Error(w, "username or password required", http.StatusBadRequest)
+			return
+		}
+		if err := as.Register(r.Context(), req.Username, req.Password); err != nil {
+			httpcode.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		httpcode.Success(w, http.StatusOK, "success", "true")
+	}).Methods(http.MethodPost)
+	r.HandleFunc(constant.UPDATE_USER, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		var req struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+			Role     string `json:"role"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			httpcode.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if req.Username == "" || req.Password == "" {
+			httpcode.Error(w, "username or password required", http.StatusBadRequest)
+			return
+		}
+		if err := as.Update(r.Context(), req.Username, req.Password, req.Role); err != nil {
+			httpcode.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		httpcode.Success(w, http.StatusOK, "success", true)
+	}).Methods(http.MethodPost)
+	r.HandleFunc(constant.DELETE_USER, func(w http.ResponseWriter, req *http.Request) {
+		if req.Method != http.MethodDelete {
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		username := req.URL.Query().Get("username")
+		if username == "" {
+			httpcode.Error(w, "username is empty", http.StatusBadRequest)
+			return
+		}
+		if err := as.Delete(req.Context(), username); err != nil {
+			httpcode.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		httpcode.Success(w, http.StatusOK, "success", "true")
+	}).Methods(http.MethodDelete)
+	r.HandleFunc(constant.GET_USER_LIST, func(w http.ResponseWriter, req *http.Request) {
+		if req.Method != http.MethodGet {
+			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		item, err := as.List(req.Context())
+		if err != nil {
+			httpcode.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		httpcode.Success(w, http.StatusOK, "success", item)
+	}).Methods(http.MethodGet)
+
 	return r
 }

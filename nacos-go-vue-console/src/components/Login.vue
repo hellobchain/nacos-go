@@ -29,7 +29,7 @@ export default {
         this.$store.commit('SET_TOKEN', res.accessToken)
         // 获取用户信息
         const userInfo = await getUserInfo()
-        localStorage.setItem('userName', userInfo.userName)
+        localStorage.setItem('username', userInfo.username)
         localStorage.setItem('role', userInfo.role)
         this.$router.replace('/')
 

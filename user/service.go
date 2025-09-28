@@ -22,7 +22,44 @@ func NewAuthUserService(r UserRepo) *AuthUserService {
 
 // 注册
 func (s *AuthUserService) Register(ctx context.Context, username, password string) error {
-	return s.repo.Save(ctx, &User{Username: username, Password: password})
+	passwordBytes, _ := hex.DecodeString(password)
+	plainBytes, err := utils.DefaultAesTool.Decrypt(passwordBytes)
+	if err != nil {
+		logger.Errorf("decrypt password error, err: %v", err)
+		return errors.New("decrypt password error")
+	}
+	return s.repo.Save(ctx, &User{Username: username, Password: string(plainBytes)})
+}
+
+// 修改用户信息
+func (s *AuthUserService) Update(ctx context.Context, username, password, role string) error {
+	u, err := s.repo.GetByName(ctx, username)
+	if err != nil {
+		return err
+	}
+	passwordBytes, _ := hex.DecodeString(password)
+	plainBytes, err := utils.DefaultAesTool.Decrypt(passwordBytes)
+	if err != nil {
+		logger.Errorf("decrypt password error, err: %v", err)
+		return errors.New("decrypt password error")
+	}
+	updateUser := &User{
+		ID:       u.ID,
+		Username: u.Username,
+		Password: string(plainBytes),
+		Role:     role,
+	}
+	return s.repo.Save(ctx, updateUser)
+}
+
+// 获取用户列表
+func (s *AuthUserService) List(ctx context.Context) ([]*User, error) {
+	return s.repo.List(ctx)
+}
+
+// 删除用户
+func (s *AuthUserService) Delete(ctx context.Context, username string) error {
+	return s.repo.Delete(ctx, username)
 }
 
 // 登录 → 返回 JWT
@@ -81,6 +118,7 @@ func (s *AuthUserService) ChangePassword(ctx context.Context, username, oldPassw
 	}
 	updateUser := &User{
 		ID:       u.ID,
+		Username: u.Username,
 		Password: string(newPlainBytes),
 	}
 	return s.repo.Save(ctx, updateUser)
@@ -93,7 +131,7 @@ func InitAdminUser(svc *AuthUserService) {
 	}
 	password := os.Getenv("NACOS_ADMIN_PASSWORD")
 	if password == "" {
-		password = "nacos"
+		password = "438c3edd02f9317d849f19d7a78ee66f"
 	}
 	// 如果存在
 	_, err := svc.repo.GetByName(context.Background(), username)

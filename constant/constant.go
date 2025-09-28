@@ -28,8 +28,12 @@ const (
 // 用户
 const (
 	// 用户登录
-	AUTH_LOGIN = "/nacos/v1/auth/login"
-	USER_INFO  = "/nacos/v1/auth/user"
+	AUTH_LOGIN    = "/nacos/v1/auth/login"
+	USER_INFO     = "/nacos/v1/auth/user"
+	REGISTER_USER = "/nacos/v1/auth/user/register"
+	UPDATE_USER   = "/nacos/v1/auth/user/update"
+	DELETE_USER   = "/nacos/v1/auth/user/delete"
+	GET_USER_LIST = "/nacos/v1/auth/user/list"
 )
 
 const (
