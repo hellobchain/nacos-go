@@ -73,7 +73,7 @@ export default {
 
 .input,
 .textarea {
-  width: 100%;
+  width: 95%;
   padding: 10px 14px;
   font-size: 15px;
   border: 1px solid #d9d9d9;
