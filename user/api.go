@@ -78,7 +78,6 @@ func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 		httpcode.Success(w, http.StatusOK, "success", "true")
 	}).Methods(http.MethodPost)
 
-	// 	export const addUser = data => request({ url: '/v1/auth/user/register', method: 'post', data })
 	r.HandleFunc(constant.REGISTER_USER, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -87,21 +86,32 @@ func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 		var req struct {
 			Username string `json:"username"`
 			Password string `json:"password"`
+			Role     string `json:"role"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if req.Username == "" || req.Password == "" {
-			httpcode.Error(w, "username or password required", http.StatusBadRequest)
+		if req.Username == "" || req.Password == "" || req.Role == "" {
+			httpcode.Error(w, "username or password or role required", http.StatusBadRequest)
 			return
 		}
-		if err := as.Register(r.Context(), req.Username, req.Password); err != nil {
+		if req.Role == constant.ROLE_ADMIN {
+			httpcode.Error(w, "role must not be admin", http.StatusBadRequest)
+			return
+		}
+		u, _ := as.GetUserInfo(r.Context(), req.Username)
+		if u != nil {
+			httpcode.Error(w, "user already exists", http.StatusBadRequest)
+			return
+		}
+		if err := as.Register(r.Context(), req.Username, req.Password, req.Role); err != nil {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		httpcode.Success(w, http.StatusOK, "success", "true")
 	}).Methods(http.MethodPost)
+
 	r.HandleFunc(constant.UPDATE_USER, func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
@@ -120,23 +130,41 @@ func AuthRoute(r *handle.LogRouter, as *AuthUserService) http.Handler {
 			httpcode.Error(w, "username or password required", http.StatusBadRequest)
 			return
 		}
+		u, _ := as.GetUserInfo(r.Context(), req.Username)
+		if u == nil {
+			httpcode.Error(w, "user not exist", http.StatusBadRequest)
+			return
+		}
+		if u.Role == constant.ROLE_ADMIN {
+			httpcode.Error(w, "permission denied", http.StatusBadRequest)
+			return
+		}
 		if err := as.Update(r.Context(), req.Username, req.Password, req.Role); err != nil {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 		httpcode.Success(w, http.StatusOK, "success", true)
 	}).Methods(http.MethodPost)
-	r.HandleFunc(constant.DELETE_USER, func(w http.ResponseWriter, req *http.Request) {
-		if req.Method != http.MethodDelete {
+	r.HandleFunc(constant.DELETE_USER, func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodDelete {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-		username := req.URL.Query().Get("username")
+		username := r.URL.Query().Get("username")
 		if username == "" {
 			httpcode.Error(w, "username is empty", http.StatusBadRequest)
 			return
 		}
-		if err := as.Delete(req.Context(), username); err != nil {
+		u, _ := as.GetUserInfo(r.Context(), username)
+		if u == nil {
+			httpcode.Error(w, "user not exist", http.StatusBadRequest)
+			return
+		}
+		if u.Role == constant.ROLE_ADMIN {
+			httpcode.Error(w, "permission denied", http.StatusBadRequest)
+			return
+		}
+		if err := as.Delete(r.Context(), username); err != nil {
 			httpcode.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}

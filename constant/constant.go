@@ -45,3 +45,9 @@ const (
 const (
 	TENANT_ROUTER = "/nacos/v1/cs/tenants"
 )
+
+// 角色
+const (
+	ROLE_ADMIN = "admin"
+	ROLE_USER  = "user"
+)

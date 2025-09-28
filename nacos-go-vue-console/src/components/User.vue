@@ -50,7 +50,7 @@
             v-model="form.password"
             type="password"
             class="input"
-            placeholder="6-20 位字符（留空则不改）"
+            placeholder="4-20 位字符"
           />
 
           <label class="label">角色</label>
@@ -72,6 +72,7 @@
 <script>
 import { Notify } from '@/components/Notify'
 import { addUser,updateUser,deleteUser,getUserList } from '@/api/auth'
+import { encryptByAesEcb } from '@/utils/crypto'
 export default {
   name: 'User',
   data() {
@@ -107,10 +108,10 @@ export default {
 
       try {
         if (this.isAdd) {
-          await addUser({ username, password, role })
+          await addUser({ username, password:encryptByAesEcb(password), role })
           Notify.success('新增成功')
         } else {
-          await updateUser({ username, password, role })
+          await updateUser({ username, password:encryptByAesEcb(password), role })
           Notify.success('修改成功')
         }
         this.closeDialog()

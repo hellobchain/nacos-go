@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 
+	"github.com/hellobchain/nacos-go/constant"
 	"github.com/hellobchain/nacos-go/pkg/utils"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -21,14 +22,14 @@ func NewAuthUserService(r UserRepo) *AuthUserService {
 }
 
 // 注册
-func (s *AuthUserService) Register(ctx context.Context, username, password string) error {
+func (s *AuthUserService) Register(ctx context.Context, username, password string, role string) error {
 	passwordBytes, _ := hex.DecodeString(password)
 	plainBytes, err := utils.DefaultAesTool.Decrypt(passwordBytes)
 	if err != nil {
 		logger.Errorf("decrypt password error, err: %v", err)
 		return errors.New("decrypt password error")
 	}
-	return s.repo.Save(ctx, &User{Username: username, Password: string(plainBytes)})
+	return s.repo.Save(ctx, &User{Username: username, Password: string(plainBytes), Role: role})
 }
 
 // 修改用户信息
@@ -79,7 +80,7 @@ func (s *AuthUserService) Login(ctx context.Context, username, password string) 
 		return "", "", errors.New("wrong password")
 	}
 	uuidStr := utils.GetPureUUID()
-	token, err := utils.NewSignedToken(u.ID, u.Username, "user", uuidStr, 24)
+	token, err := utils.NewSignedToken(u.ID, u.Username, u.Role, uuidStr, 24)
 	if err != nil {
 		return "", "", err
 	}
@@ -138,7 +139,7 @@ func InitAdminUser(svc *AuthUserService) {
 	if err != nil {
 		// 用户不存在 则创建
 		logger.Warn("init admin user")
-		if err := svc.Register(context.Background(), username, password); err != nil {
+		if err := svc.Register(context.Background(), username, password, constant.ROLE_ADMIN); err != nil {
 			logger.Errorf("admin user exist or err: %v", err)
 		} else {
 			logger.Debugf("admin user created: %s", username)
