@@ -59,7 +59,7 @@ func ConfigRoute(r *handle.LogRouter, svc *Service) {
 		httpcode.Success(w, http.StatusOK, "success", item)
 	}).Methods(http.MethodGet)
 
-	// 获取配置
+	// 获取配置列表
 	r.HandleFunc(constant.LIST_CONFIGS, func(w http.ResponseWriter, req *http.Request) {
 		if req.Method != http.MethodGet {
 			httpcode.Error(w, "method not allowed", http.StatusMethodNotAllowed)

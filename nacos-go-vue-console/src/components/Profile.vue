@@ -84,7 +84,6 @@ export default {
     }
   },
   created() {
-    // 演示：从 localStorage 拿用户名，真实项目请改 vuex
     this.userInfo.username = localStorage.getItem('username') || 'nacos'
   },
   methods: {
@@ -98,7 +97,7 @@ export default {
     async submitPwd() {
       const { oldPwd, newPwd, confirm } = this.pwdForm
       if (!oldPwd || !newPwd) return Notify.warning('请填写完整')
-      if (newPwd.length < 4) return Notify.warning('新密码至少 4 位')
+      if (newPwd.length < 4) return Notify.warning('新密码至少4位')
       if (newPwd !== confirm) return Notify.warning('两次密码不一致')
       try {
         await changePassword({
@@ -108,7 +107,6 @@ export default {
         })
         Notify.success('密码已修改，请重新登录')
         this.closeDialog()
-        // 修改密码后常见做法：直接退出
         this.$store.commit('SET_TOKEN', '')
         this.$router.replace('/login')
       } catch (e) {
